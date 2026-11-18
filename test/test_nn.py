@@ -845,6 +845,9 @@ class TestNN(NNTestCase):
         n2 += n
         self.assertEqual(n, nn.Sequential(l1, l2, l3, l4))
         self.assertEqual(n2, nn.Sequential(l4, l1, l2, l3, l4))
+        n3 = nn.Sequential(l1, l2)
+        n3 += n3
+        self.assertEqual(n3, nn.Sequential(l1, l2, l1, l2))
 
     def test_Sequential_mul(self):
         l1 = nn.Linear(10, 20)
@@ -945,6 +948,9 @@ class TestNN(NNTestCase):
             n1.append(l)
         n3.extend(n2)
         self.assertEqual(n3, n1)
+        n4 = nn.Sequential(l1, l2)
+        n4.extend(n4)
+        self.assertEqual(n4, nn.Sequential(l1, l2, l1, l2))
 
     def test_ModuleList(self):
         modules = [nn.ReLU(), nn.Linear(5, 5)]
@@ -1001,6 +1007,17 @@ class TestNN(NNTestCase):
             module_list += nn.ReLU()
         with self.assertRaises(TypeError):
             module_list.extend(nn.ReLU())
+
+        l1, l2 = nn.ReLU(), nn.Tanh()
+        ml = nn.ModuleList([l1, l2])
+        ml.extend(ml)
+        self.assertEqual(ml, nn.ModuleList([l1, l2, l1, l2]))
+        ml = nn.ModuleList([l1, l2])
+        ml += ml
+        self.assertEqual(ml, nn.ModuleList([l1, l2, l1, l2]))
+        ml = nn.ModuleList([l1, l2])
+        ml.extend(ml.children())
+        self.assertEqual(ml, nn.ModuleList([l1, l2, l1, l2]))
 
         l1 = nn.Linear(1, 2)
         l2 = nn.Linear(2, 3)

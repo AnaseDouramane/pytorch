@@ -189,7 +189,7 @@ class Sequential(Module):
     def __iadd__(self, other) -> Self:
         if isinstance(other, Sequential):
             offset = len(self)
-            for i, module in enumerate(other):
+            for i, module in enumerate(list(other)):
                 self.add_module(str(i + offset), module)
             return self
         else:
@@ -333,7 +333,7 @@ class Sequential(Module):
             )
 
         """
-        for layer in sequential:
+        for layer in list(sequential):
             self.append(layer)
         return self
 
@@ -501,7 +501,8 @@ class ModuleList(Module):
                 "iterable, but got " + type(modules).__name__
             )
         offset = len(self)
-        for i, module in enumerate(modules):
+        # Snapshot: `modules` may be backed by self._modules (e.g. self or self.children())
+        for i, module in enumerate(list(modules)):
             self.add_module(str(offset + i), module)
         return self
 
